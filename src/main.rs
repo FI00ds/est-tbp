@@ -9,7 +9,7 @@ fn main() {
     score_weights.insert(RelicStat::Spd, 1.0);
     score_weights.insert(RelicStat::Atk, 0.75);
 
-    let filter = |r: &_| substat_score(r, &score_weights) > 30.0;
+    let filter = |r: &_| substat_weight(r, &score_weights) * 6.48 > 30.0;
 
     calculate(RelicSlot::Head, RelicStat::Hp, filter);
     calculate(RelicSlot::Hands, RelicStat::Atk, filter);
@@ -21,7 +21,7 @@ fn main() {
 
 fn calculate(slot: RelicSlot, main_stat: RelicStat, filter: impl Fn(&RollResult) -> bool) {
     println!("=====================================================");
-    println!("params: {slot:?}, {main_stat:?}");
+    println!("params: {slot:?}, {main_stat:?}\n");
 
     let p_main = p_main(slot, main_stat);
     let p_sub = p_sub(main_stat, filter);
@@ -29,13 +29,12 @@ fn calculate(slot: RelicSlot, main_stat: RelicStat, filter: impl Fn(&RollResult)
 
     println!("p_main = {:.2}%", p_main * 100.0);
     println!("p_sub  = {:.2}%", p_sub * 100.0);
-    println!("p      = {:.2}%", p * 100.0);
+    println!("p      = {:.2}%\n", p * 100.0);
 
     let est_relic_count = 1.0 / p;
     let tbp_per_relic = 40.0 / 2.1;
     let est_tbp = est_relic_count * tbp_per_relic;
-
-    println!();
+    
     println!("est. relic count = {:.1}", est_relic_count);
     println!("        est. tbp = {:.1} ({:.1} days)", est_tbp, est_tbp/240.0);
 }
@@ -87,20 +86,13 @@ fn p_sub(main_stat: RelicStat, filter: impl Fn(&RollResult) -> bool) -> f64 {
     RollResultIterator::new(main_stat, 4)
         .chain(RollResultIterator::new(main_stat, 5))
         .filter(filter)
-        .map(|r| {
-            let line_probability = if r.len() == 9 {
-                0.20
-            } else {
-                0.80
-            };
-
-            line_probability * r.initial_subs_probability(main_stat) * r.upgrade_probability()
-        }).sum::<f64>()
+        .map(|r| r.probability(main_stat))
+        .sum::<f64>()
 }
 
-fn substat_score(r: &RollResult, weights: &HashMap<RelicStat, f64>) -> f64 {
+fn substat_weight(r: &RollResult, weights: &HashMap<RelicStat, f64>) -> f64 {
     // scale to CV and assume mid-rolls
-    6.48 * 0.9 * r.iter()
+    0.9 * r.iter()
         .map(|r| weights.get(r).unwrap_or(&0f64))
         .sum::<f64>()
 }
