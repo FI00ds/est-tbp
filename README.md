@@ -4,65 +4,51 @@ read the pdf or something idk
 
 `cargo t` tests are for sanity checking my probability functions
 
-`cargo r` to run the basic analysis
-
 ## example output
 
-filter: score > 35 (based on cv)
+`cargo run --bin cv`
 
-weights: {cr: 1, cd: 1, spd: 1, atk: 0.75} * 6.48
 ```
-=====================================================        
-params: Head, Hp                                             
-p_main = 12.50%
-p_sub  = 6.81%
-p      = 0.85%
-
-est. relic count = 117.5
-        est. tbp = 2237.6 (9.3 days)
 =====================================================
-params: Hands, Atk
-
-p_main = 12.50%
-p_sub  = 2.82%
-p      = 0.35%
-
-est. relic count = 283.8
-        est. tbp = 5404.9 (22.5 days)
+params: 1.0 rolls, 5.2~6.5 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    = 50.267%   (1/2.0)
+   p        =  6.283%   (1/15.9)
+   est. tbp =     303   (1.3 days)
 =====================================================
-params: Body, CritRate
-
-p_main = 1.25%
-p_sub  = 2.76%
-p      = 0.03%
-
-est. relic count = 2902.1
-        est. tbp = 55278.1 (230.3 days)
+params: 2.0 rolls, 10.4~13.0 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    = 31.860%   (1/3.1)
+   p        =  3.982%   (1/25.1)
+   est. tbp =     478   (2.0 days)
 =====================================================
-params: Feet, Spd
-
-p_main = 1.25%
-p_sub  = 3.40%
-p      = 0.04%
-
-est. relic count = 2353.3
-        est. tbp = 44824.6 (186.8 days)
+params: 3.0 rolls, 15.6~19.4 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    = 18.588%   (1/5.4)
+   p        =  2.323%   (1/43.0)
+   est. tbp =     820   (3.4 days)
 =====================================================
-params: Orb, IceDmgBoost
-
-p_main = 2.32%
-p_sub  = 5.37%
-p      = 0.12%
-
-est. relic count = 802.9
-        est. tbp = 15293.2 (63.7 days)
+params: 4.0 rolls, 20.7~25.9 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    =  9.614%   (1/10.4)
+   p        =  1.202%   (1/83.2)
+   est. tbp =    1585   (6.6 days)
 =====================================================
-params: Rope, AtkPercent
-
-p_main = 6.67%
-p_sub  = 6.81%
-p      = 0.45%
-
-est. relic count = 220.3
-        est. tbp = 4195.6 (17.5 days)
+params: 5.0 rolls, 25.9~32.4 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    =  4.105%   (1/24.4)
+   p        =  0.513%   (1/194.9)
+   est. tbp =    3712   (15.5 days)
+=====================================================
+params: 6.0 rolls, 31.1~38.9 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    =  1.223%   (1/81.8)
+   p        =  0.153%   (1/654.2)
+   est. tbp =   12460   (51.9 days)
+=====================================================
+params: 7.0 rolls, 36.3~45.4 CV
+   p_main   = 12.500%   (1/8.0)
+   p_sub    =  0.133%   (1/750.8)
+   p        =  0.017%   (1/6006.1)
+   est. tbp =  114401   (476.7 days)
 ```

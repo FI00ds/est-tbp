@@ -104,3 +104,42 @@ impl Iterator for RollResultIterator {
         self.0.next()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn initial_subs() {
+        // "0 upgrades" should list all possible initial substat combinations (binomial coefficient)
+        {
+            assert_eq!(RollResultIterator::new(RelicStat::Hp, 0).count(), 330); // 11 choose 4
+            assert_eq!(RollResultIterator::new(RelicStat::PhysDmgBoost, 0).count(), 495); // 12 choose 4
+        }
+
+        // Initial substat probability sum of all results should add up to 1
+        {
+            assert_float_eq(
+                1.0,
+                RollResultIterator::new(RelicStat::Hp, 0)
+                    .map(|r| r.initial_subs_probability(RelicStat::Hp))
+                    .sum::<f64>(),
+            );
+        }
+
+        // Initial and upgrade probability should add up to 1
+        {
+            assert_float_eq(
+                1.0,
+                RollResultIterator::new(RelicStat::Hp, 4)
+                    .map(|r| r.initial_subs_probability(RelicStat::Hp) * r.upgrade_probability())
+                    .sum::<f64>(),
+            );
+        }
+    }
+
+    fn assert_float_eq(a: f64, b: f64) {
+        let epsilon = 0.00001;
+        assert!(epsilon > (a - b).abs())
+    }
+}
