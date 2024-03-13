@@ -4,7 +4,7 @@ use itertools::Itertools;
 use crate::RelicStat;
 
 #[derive(Debug)]
-pub struct RollResult(Vec<RelicStat>);
+pub struct RollResult(pub Vec<RelicStat>);
 
 impl RollResult {
     pub fn score(&self, weights: &HashMap<RelicStat, f64>) -> f64 {

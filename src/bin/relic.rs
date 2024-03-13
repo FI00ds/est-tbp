@@ -10,14 +10,28 @@ fn main() {
     score_weights.insert(RelicStat::AtkPercent, 0.75);
     score_weights.insert(RelicStat::Atk, 0.25);
 
-    let filter = |r: &_| substat_weight(r, &score_weights) >= 6.0;
+    let current = RollResult(vec![
+        RelicStat::AtkPercent,
+        RelicStat::AtkPercent,
+        RelicStat::Spd,
+        RelicStat::Spd,
+        RelicStat::Spd,
+        RelicStat::Spd,
+        RelicStat::CritDmg,
+        RelicStat::CritDmg,
+        RelicStat::Def,
+    ]);
+
+    let weight = substat_weight(&current, &score_weights);
+
+    println!("=====================================================");
+    println!("       substats: {current:?}");
+    println!("substat weights: {score_weights:?}");
+    println!("        to beat: {weight:.1}");
+
+    let filter = |r: &_| substat_weight(r, &score_weights) >= weight;
 
     calculate(RelicSlot::Head, RelicStat::Hp, filter);
-    calculate(RelicSlot::Hands, RelicStat::Atk, filter);
-    calculate(RelicSlot::Body, RelicStat::CritRate, filter);
-    calculate(RelicSlot::Feet, RelicStat::Spd, filter);
-    calculate(RelicSlot::Orb, RelicStat::IceDmgBoost, filter);
-    calculate(RelicSlot::Rope, RelicStat::AtkPercent, filter);
 }
 
 fn calculate(slot: RelicSlot, main_stat: RelicStat, filter: impl Fn(&RollResult) -> bool) {
@@ -40,8 +54,7 @@ fn calculate(slot: RelicSlot, main_stat: RelicStat, filter: impl Fn(&RollResult)
 }
 
 fn substat_weight(r: &RollResult, weights: &HashMap<RelicStat, f64>) -> f64 {
-    // scale to CV and assume mid-rolls
-    0.9 * r.iter()
+    6.48 * 0.9 * r.iter()
         .map(|r| weights.get(r).unwrap_or(&0f64))
         .sum::<f64>()
 }
