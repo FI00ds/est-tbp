@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use est_tbp::{p_main, p_sub, RelicSlot, RelicStat};
-use est_tbp::roll_result::RollResult;
+
+use est_tbp::{Relic, RelicSlot, RelicStat};
 
 fn main() {
     let mut score_weights = HashMap::new();
@@ -10,24 +10,23 @@ fn main() {
     score_weights.insert(RelicStat::AtkPercent, 0.75);
     score_weights.insert(RelicStat::Atk, 0.25);
 
-    let filter = |r: &_| substat_weight(r, &score_weights) >= 6.0;
+    let filter = |r: &_| relic_score(r, &score_weights) >= 6.0;
 
-    calculate(RelicSlot::Head, RelicStat::Hp, filter);
-    calculate(RelicSlot::Hands, RelicStat::Atk, filter);
-    calculate(RelicSlot::Body, RelicStat::CritRate, filter);
-    calculate(RelicSlot::Feet, RelicStat::Spd, filter);
-    calculate(RelicSlot::Orb, RelicStat::IceDmgBoost, filter);
-    calculate(RelicSlot::Rope, RelicStat::AtkPercent, filter);
+    calculate(Relic::new(5, RelicSlot::Head, RelicStat::Hp), filter);
+    calculate(Relic::new(5, RelicSlot::Hands, RelicStat::Atk), filter);
+    calculate(Relic::new(5, RelicSlot::Body, RelicStat::CritRate), filter);
+    calculate(Relic::new(5, RelicSlot::Feet, RelicStat::Spd), filter);
+    calculate(Relic::new(5, RelicSlot::Orb, RelicStat::IceDmgBoost), filter);
+    calculate(Relic::new(5, RelicSlot::Rope, RelicStat::AtkPercent), filter);
 }
 
-fn calculate(slot: RelicSlot, main_stat: RelicStat, filter: impl Fn(&RollResult) -> bool) {
+fn calculate(relic: Relic, filter: impl Fn(&Relic) -> bool) {
     println!("=====================================================");
-    println!("params: {slot:?}, {main_stat:?}");
+    println!("{relic:?}");
 
-    let p_main = p_main(slot, main_stat);
-    let p_sub = p_sub(main_stat, filter);
+    let p_main = relic.p_main();
+    let p_sub = relic.filtered_p_sub(filter);
     let p = p_main * p_sub;
-
 
     let est_relic_count = 1.0 / p;
     let tbp_per_relic = 40.0 / 2.1;
@@ -39,9 +38,8 @@ fn calculate(slot: RelicSlot, main_stat: RelicStat, filter: impl Fn(&RollResult)
     println!("   est. tbp =  {:>6.0}   ({:.1} days)", est_tbp, est_tbp / 240.0);
 }
 
-fn substat_weight(r: &RollResult, weights: &HashMap<RelicStat, f64>) -> f64 {
-    // scale to CV and assume mid-rolls
-    0.9 * r.iter()
+fn relic_score(relic: &Relic, weights: &HashMap<RelicStat, f64>) -> f64 {
+    relic.subs.iter()
         .map(|r| weights.get(r).unwrap_or(&0f64))
         .sum::<f64>()
 }
