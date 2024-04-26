@@ -17,7 +17,7 @@ fn main() {
     calculate(Relic::new(5, RelicSlot::Body, RelicStat::CritRate), filter);
     calculate(Relic::new(5, RelicSlot::Feet, RelicStat::Spd), filter);
     calculate(Relic::new(5, RelicSlot::Orb, RelicStat::IceDmgBoost), filter);
-    calculate(Relic::new(5, RelicSlot::Rope, RelicStat::AtkPercent), filter);
+    calculate(Relic::new(5, RelicSlot::Rope, RelicStat::EnergyRegenRate), filter);
 }
 
 fn calculate(relic: Relic, filter: impl Fn(&Relic) -> bool) {
