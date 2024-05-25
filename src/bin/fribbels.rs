@@ -54,6 +54,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!();
     }
 
+    println!("press enter to close");
+    std::io::stdin().read_line(&mut String::new()).unwrap();
+
     Ok(())
 }
 
@@ -140,6 +143,8 @@ fn parse_stat(s: &str) -> Option<RelicStat> {
     }
 }
 
+// https://raw.githubusercontent.com/fribbels/hsr-optimizer/main/src/data/characters.json
+// Object.values(ababa).map(({id, name}) => `${id} => Some("${name}")`).join(",\n")
 fn parse_char_id(id: u32) -> Option<&'static str> {
     match id {
         1001 => Some("March 7th"),
@@ -188,7 +193,9 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
         1307 => Some("Black Swan"),
         1308 => Some("Acheron"),
         1309 => Some("Robin"),
+        1310 => Some("Firefly"),
         1312 => Some("Misha"),
+        1314 => Some("Jade"),
         1315 => Some("Boothill"),
         8001..=8006 => Some("Trailblazer"),
         _ => None
