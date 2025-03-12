@@ -24,7 +24,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     for char in save["characters"].as_array().unwrap() {
-        println!("{} ---------------", parse_char_id(char["id"].as_str().unwrap().parse().unwrap()).unwrap());
+        let char_id = char["id"].as_str().unwrap().parse().unwrap();
+        let char_name_opt = parse_char_id(char_id);
+        if char_name_opt.is_none() {
+            println!("{} ---------------", char_id);
+        } else {
+            println!("{} ---------------", char_name_opt.unwrap());
+        }
 
         let weights = parse_weights(char);
         if weights[&RelicStat::AtkPercent] == 1f64 && weights[&RelicStat::HpPercent] == 1f64 {
@@ -149,13 +155,15 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
     match id {
         1001 => Some("March 7th"),
         1002 => Some("Dan Heng"),
+        1008 => Some("Arlan"),
+        1009 => Some("Asta"),
+
         1003 => Some("Himeko"),
         1004 => Some("Welt"),
         1005 => Some("Kafka"),
         1006 => Some("Silver Wolf"),
-        1008 => Some("Arlan"),
-        1009 => Some("Asta"),
-        1013 => Some("Herta"),
+
+
         1101 => Some("Bronya"),
         1102 => Some("Seele"),
         1103 => Some("Serval"),
@@ -168,30 +176,38 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
         1110 => Some("Lynx"),
         1111 => Some("Luka"),
         1112 => Some("Topaz & Numby"),
+        1013 => Some("Herta"),
+
+
         1201 => Some("Qingque"),
         1202 => Some("Tingyun"),
+        1206 => Some("Sushang"),
+        1207 => Some("Yukong"),
+        1210 => Some("Guinaifen"),
+        1214 => Some("Xueyi"),
+        1215 => Some("Hanya"),
+        1223 => Some("Moze"),
+        1224 => Some("March 7th - Hunt"),
+
         1203 => Some("Luocha"),
         1204 => Some("Jing Yuan"),
         1205 => Some("Blade"),
-        1206 => Some("Sushang"),
-        1207 => Some("Yukong"),
         1208 => Some("Fu Xuan"),
         1209 => Some("Yanqing"),
-        1210 => Some("Guinaifen"),
         1211 => Some("Bailu"),
         1212 => Some("Jingliu"),
         1213 => Some("Dan Heng • Imbibitor Lunae"),
-        1214 => Some("Xueyi"),
-        1215 => Some("Hanya"),
         1217 => Some("Huohuo"),
         1218 => Some("Jiaoqiu"),
         1220 => Some("Feixiao"),
         1221 => Some("Yunli"),
         1222 => Some("Lingsha"),
-        1223 => Some("Moze"),
-        1224 => Some("March 7th - Hunt"),
         1225 => Some("Fugue"),
+
+
         1301 => Some("Gallagher"),
+        1312 => Some("Misha"),
+
         1302 => Some("Argenti"),
         1303 => Some("Ruan Mei"),
         1304 => Some("Aventurine"),
@@ -201,17 +217,20 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
         1308 => Some("Acheron"),
         1309 => Some("Robin"),
         1310 => Some("Firefly"),
-        1312 => Some("Misha"),
         1313 => Some("Sunday"),
         1314 => Some("Jade"),
         1315 => Some("Boothill"),
         1317 => Some("Rappa"),
+
+
         1401 => Some("The Herta"),
         1402 => Some("Aglaea"),
         1403 => Some("Tribbie"),
         1404 => Some("Mydei"),
         1405 => Some("Anaxa"),
         1407 => Some("Castorice"),
+
+
         8001 => Some("Caelus (Destruction)"),
         8002 => Some("Stelle (Destruction)"),
         8003 => Some("Caelus (Preservation)"),
@@ -220,6 +239,7 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
         8006 => Some("Stelle (Harmony)"),
         8007 => Some("Caelus (Remembrance)"),
         8008 => Some("Stelle (Remembrance)"),
+
         _ => None
     }
 }
