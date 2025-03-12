@@ -90,11 +90,11 @@ fn parse_weights(char: &Value) -> HashMap<RelicStat, f64> {
         let stat = parse_stat(k);
         if let Some(stat) = stat {
             let mut w = v.as_f64().unwrap();
-            
+
             if matches!(stat, RelicStat::Atk | RelicStat::Def | RelicStat::Hp) {
                 w *= 0.5;
             }
-            
+
             // if w != 0.0 {
             weights.insert(stat, w);
             // }
@@ -184,6 +184,13 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
         1214 => Some("Xueyi"),
         1215 => Some("Hanya"),
         1217 => Some("Huohuo"),
+        1218 => Some("Jiaoqiu"),
+        1220 => Some("Feixiao"),
+        1221 => Some("Yunli"),
+        1222 => Some("Lingsha"),
+        1223 => Some("Moze"),
+        1224 => Some("March 7th - Hunt"),
+        1225 => Some("Fugue"),
         1301 => Some("Gallagher"),
         1302 => Some("Argenti"),
         1303 => Some("Ruan Mei"),
@@ -195,9 +202,24 @@ fn parse_char_id(id: u32) -> Option<&'static str> {
         1309 => Some("Robin"),
         1310 => Some("Firefly"),
         1312 => Some("Misha"),
+        1313 => Some("Sunday"),
         1314 => Some("Jade"),
         1315 => Some("Boothill"),
-        8001..=8006 => Some("Trailblazer"),
+        1317 => Some("Rappa"),
+        1401 => Some("The Herta"),
+        1402 => Some("Aglaea"),
+        1403 => Some("Tribbie"),
+        1404 => Some("Mydei"),
+        1405 => Some("Anaxa"),
+        1407 => Some("Castorice"),
+        8001 => Some("Caelus (Destruction)"),
+        8002 => Some("Stelle (Destruction)"),
+        8003 => Some("Caelus (Preservation)"),
+        8004 => Some("Stelle (Preservation)"),
+        8005 => Some("Caelus (Harmony)"),
+        8006 => Some("Stelle (Harmony)"),
+        8007 => Some("Caelus (Remembrance)"),
+        8008 => Some("Stelle (Remembrance)"),
         _ => None
     }
 }
