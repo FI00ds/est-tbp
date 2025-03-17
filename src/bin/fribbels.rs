@@ -14,6 +14,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let save: Value = serde_json::from_reader(File::open(input)?)?;
 
+    let default_weights_str = include_str!("../defaultStatWeights.json");
+    let default_weights: Value = serde_json::from_str(default_weights_str)?;
+
     let relics = {
         let mut relics = HashMap::new();
         for relic in save["relics"].as_array().unwrap() {
@@ -32,11 +35,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("{} ---------------", char_name_opt.unwrap());
         }
 
-        let weights = parse_weights(char);
-        if weights[&RelicStat::AtkPercent] == 1f64 && weights[&RelicStat::HpPercent] == 1f64 {
-            // weights not set in optimizer, skip
-            continue;
-        }
+        let weights =
+            parse_weights_from_save(&save, char_id)
+            .unwrap_or_else(|| parse_default_weights(&default_weights, char_id)
+                .expect(&format!("error: encountered unknown character id {char_id}"))
+            );
 
         println!("weights: {weights:?}");
 
@@ -90,23 +93,40 @@ fn parse_relic(relic: &Map<String, Value>) -> Relic {
     }
 }
 
-fn parse_weights(char: &Value) -> HashMap<RelicStat, f64> {
+fn parse_weights_from_save(save: &Value, id: u32) -> Option<HashMap<RelicStat, f64>> {
+    let pairs = save["scoringMetadataOverrides"][format!("{id}")]["stats"].as_object()?;
+    Some(parse_pairs(pairs))
+}
+
+fn parse_default_weights(defaults: &Value, id: u32) -> Option<HashMap<RelicStat, f64>> {
+  let pairs = defaults[format!("{id}")].as_object()?;
+  Some(parse_pairs(pairs))
+}
+
+fn parse_pairs(pairs: &Map<String, Value>) -> HashMap<RelicStat, f64> {
     let mut weights = HashMap::new();
-    for (k, v) in char["form"]["weights"].as_object().expect("weights") {
+    for (k, v) in pairs {
         let stat = parse_stat(k);
         if let Some(stat) = stat {
             let mut w = v.as_f64().unwrap();
 
             if matches!(stat, RelicStat::Atk | RelicStat::Def | RelicStat::Hp) {
-                w *= 0.5;
+                w *= 0.4;
             }
+
+            if matches!(stat, RelicStat::Spd) {
+              w *= 2.3 * 2.59 / (6.48*0.9); // hack to get more accurate speed scores
+            }
+
+            w *= 1000.0;
+            w = w.floor(); // loses some of the precision from above but otherwise its ugly :mad:
+            w /= 1000.0;
 
             // if w != 0.0 {
             weights.insert(stat, w);
             // }
         }
     }
-
     weights
 }
 
