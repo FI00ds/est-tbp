@@ -57,10 +57,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let weights = weights_opt.unwrap();
 
+        let equipped = char["equipped"].as_object().unwrap().values();
+
+        if equipped.len() == 0 {
+          println!("");
+          continue;
+        }
+
         println!("weights: {weights:?}");
 
-        char["equipped"].as_object().unwrap()
-            .values()
+        equipped
             .filter_map(|id| relics.get(id.as_str().unwrap()))
             .map(|relic| parse_relic(relic))
             .for_each(|relic| {
