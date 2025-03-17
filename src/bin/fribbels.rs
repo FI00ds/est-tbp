@@ -14,6 +14,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let save: Value = serde_json::from_reader(File::open(input)?)?;
 
+    let mut missing_weights = false;
+
+    /*
+    Object.values(DB.getMetadata().characters).reduce((acc, cur) => {
+      acc[cur.id] = cur.scoringMetadata.stats
+      return acc
+    }, {})
+    */
     let default_weights_str = include_str!("../defaultStatWeights.json");
     let default_weights: Value = serde_json::from_str(default_weights_str)?;
 
@@ -35,11 +43,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("{} ---------------", char_name_opt.unwrap());
         }
 
-        let weights =
-            parse_weights_from_save(&save, char_id)
-            .unwrap_or_else(|| parse_default_weights(&default_weights, char_id)
-                .expect(&format!("error: encountered unknown character id {char_id}"))
-            );
+        let mut weights_opt = parse_weights_from_save(&save, char_id);
+        if weights_opt.is_none() {weights_opt = parse_default_weights(&default_weights, char_id)}
+        if weights_opt.is_none() {weights_opt = parse_optimizer_weights(&save, char_id)}
+        if weights_opt.is_none() {
+          if !missing_weights {
+            println!("No weights available for {}.", char_name_opt.unwrap_or(&format!("character with id {char_id}")));
+            println!("A temporary fix is to set the desired weights for the character in the optimiser tab and then launch an optimiser run.");
+            println!("For a long term fix either update the source code yourself (fribbels.rs) or contact the developer");
+            missing_weights = true;
+          }
+          continue;
+        }
+        let weights = weights_opt.unwrap();
 
         println!("weights: {weights:?}");
 
@@ -91,6 +107,17 @@ fn parse_relic(relic: &Map<String, Value>) -> Relic {
             })
             .collect(),
     }
+}
+
+fn parse_optimizer_weights(save: &Value, id: u32) -> Option<HashMap<RelicStat, f64>> {
+  let characters = save["characters"].as_array()?;
+  let character = characters.into_iter().find(|&x| {
+    let character = x.as_object();
+    if character.is_none() {return false;}
+    id == character.unwrap()["id"]
+  })?;
+  let pairs = character["form"]["weights"].as_object()?;
+  Some(parse_pairs(pairs))
 }
 
 fn parse_weights_from_save(save: &Value, id: u32) -> Option<HashMap<RelicStat, f64>> {
